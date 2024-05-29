@@ -12,8 +12,10 @@ export default function LogoMobile() {
           width={40}
         />
         <p className="text-2xl font-semibold ml-2.5">
-          Budget
-          <span className="ml-1 rounded-md bg-gradient-to-br from-violet-400 to-cyan-500 p-1 text-foreground">
+          <span className="rounded-md bg-gradient-to-br from-violet-400 to-cyan-500 p-1 text-foreground">
+            Budget
+          </span>
+          <span className="ml-1 rounded-md bg-gradient-to-br from-orange-600 to-cyan-500 p-1 text-foreground">
             Tracker
           </span>
         </p>
