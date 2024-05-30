@@ -1,6 +1,6 @@
 
+export default async function Transactions() {
 
-export default function Transactions() {
   return (
     <div>
       Transaction Page
