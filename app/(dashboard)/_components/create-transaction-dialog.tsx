@@ -12,11 +12,18 @@ import {
 import { TransactionType } from "@/types/transactions";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Form,
   FormControl,
@@ -26,7 +33,16 @@ import {
   FormLabel,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { format } from "date-fns";
 import CategoryPicker from "./category-picker";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { CreateTransaction } from "../_actions/transactions";
+import { toast } from "sonner";
+import { DateToUTCDate } from "@/lib/helper";
+import { Loader } from "lucide-react";
 
 type Props = {
   trigger: React.ReactNode;
@@ -34,13 +50,53 @@ type Props = {
 };
 
 export default function CreateTransactionDialog({ trigger, type }: Props) {
-  const [open, setopen] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const form = useForm<CreateTransactionSchemaType>({
     resolver: zodResolver(transactionSchema),
     defaultValues: {
       type,
       date: new Date(),
+    },
+  });
+
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: CreateTransaction,
+    onSuccess: () => {
+      toast.success("Transaksi berhasil dibuat 🎉", {
+        id: "create-transaction",
+      });
+
+      form.reset({
+        type,
+        description: "",
+        amount: 0,
+        date: new Date(),
+        category: undefined,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["overview"],
+      });
+
+      setOpen((prev) => !prev);
+    },
+    onError: (error) => {
+      toast.error(error.message, {
+        id: "create-transaction",
+      });
+
+      form.reset({
+        type,
+        description: "",
+        amount: 0,
+        date: new Date(),
+        category: undefined,
+      });
+
+      setOpen((prev) => !prev);
     },
   });
 
@@ -51,16 +107,30 @@ export default function CreateTransactionDialog({ trigger, type }: Props) {
     [form]
   );
 
+  const onSubmit = useCallback(
+    (data: CreateTransactionSchemaType) => {
+      toast.loading("Sedang membuat transaksi...", {
+        id: "create-transaction",
+      });
+
+      mutate({
+        ...data,
+        date: DateToUTCDate(data.date),
+      });
+    },
+    [mutate]
+  );
+
   return (
     <Dialog
       open={open}
-      onOpenChange={setopen}
+      onOpenChange={setOpen}
     >
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Buat Transaksi{" "}
+            Buat Transaksi
             <span
               className={cn(
                 "m-1",
@@ -69,11 +139,14 @@ export default function CreateTransactionDialog({ trigger, type }: Props) {
             >
               {type === "income" ? "Pemasukan" : "Pengeluaran"}
             </span>
-            transaction
+            baru
           </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-4">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4"
+          >
             <FormField
               control={form.control}
               name="description"
@@ -130,12 +203,35 @@ export default function CreateTransactionDialog({ trigger, type }: Props) {
               />
               <FormField
                 control={form.control}
-                name="category"
+                name="date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Tanggal Transaksi</FormLabel>
                     <FormControl>
-                      <CategoryPicker type={type} />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[200px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value
+                              ? format(field.value, "dd MMMM yyyy")
+                              : "Pilih tanggal"}
+                            <CalendarIcon className="size-4 ml-auto shrink-0 opacity-70" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
                     </FormControl>
                     <FormDescription>Pilih tanggal transaksi</FormDescription>
                   </FormItem>
@@ -144,6 +240,28 @@ export default function CreateTransactionDialog({ trigger, type }: Props) {
             </div>
           </form>
         </Form>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button
+              type="button"
+              variant={"default"}
+              onClick={() => {
+                form.reset();
+              }}
+            >
+              Batal
+            </Button>
+          </DialogClose>
+          <Button
+            onClick={form.handleSubmit(onSubmit)}
+            disabled={isPending}
+          >
+            {isPending && (
+              <Loader className="size-4 mr-2 shrink-0 animate-spin" />
+            )}
+            {isPending ? "Membuat" : "Buat"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

@@ -1,15 +1,14 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs"
+import { useUser } from "@clerk/nextjs";
 import { Minus, Plus } from "lucide-react";
 
 import CreateTransactionDialog from "./create-transaction-dialog";
 
 import { Button } from "@/components/ui/button";
 
-
 export default function WelcomeMsg() {
-  const { user, isLoaded } = useUser(); 
+  const { user, isLoaded } = useUser();
 
   return (
     <div className="max-w-screen-2xl mx-auto w-full">
@@ -26,16 +25,22 @@ export default function WelcomeMsg() {
             <CreateTransactionDialog
               type="income"
               trigger={
-                <Button>
+                <Button
+                  variant={"outline"}
+                  className="bg-emerald-500 text-white hover:bg-emerald-700 hover:text-white rounded-lg"
+                >
                   <Plus className="size-4 mr-2 shrink-0" />
-                  Tambah Pemasukan 🤑
+                  Pemasukan 🤑
                 </Button>
               }
             />
             <CreateTransactionDialog
               type="expense"
               trigger={
-                <Button>
+                <Button
+                  variant={"outline"}
+                  className="bg-rose-500 text-white hover:bg-rose-700 hover:text-white rounded-lg"
+                >
                   <Minus className="size-4 mr-2 shrink-0" />
                   Pengeluaran 😤
                 </Button>

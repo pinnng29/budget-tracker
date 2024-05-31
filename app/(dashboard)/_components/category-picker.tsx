@@ -19,7 +19,7 @@ import { Category } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useEffect, useState } from "react";
 import CreateCategoryDialog from "./create-category-dialog";
-import { Check } from "lucide-react";
+import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -32,9 +32,8 @@ export default function CategoryPicker({ type, onChange }: Props) {
   const [value, setValue] = useState("");
 
   useEffect(() => {
-    if (!value) {
-      onChange(value);
-    }
+    if (!value) return;
+    onChange(value);
   }, [onChange, value]);
 
   const categoryQuery = useQuery<Category[]>({
@@ -47,10 +46,13 @@ export default function CategoryPicker({ type, onChange }: Props) {
     (category) => category.name === value
   );
 
-  const successCallback = useCallback((category: Category) => {
-    setValue(category.name);
-    setOpen(false);
-  }, []);
+  const successCallback = useCallback(
+    (category: Category) => {
+      setValue(category.name);
+      setOpen(false);
+    },
+    [setValue, setOpen]
+  );
 
   return (
     <Popover
@@ -58,12 +60,18 @@ export default function CategoryPicker({ type, onChange }: Props) {
       onOpenChange={setOpen}
     >
       <PopoverTrigger asChild>
-        <Button>
+        <Button
+          variant={"outline"}
+          role="combobox"
+          aria-expanded={open}
+          className="w-[200px] justify-between"
+        >
           {selectedCategory ? (
             <CategoryRow category={selectedCategory} />
           ) : (
             "Pilih kategori"
           )}
+          <ChevronsUpDown className="size-4 ml-2 shrink-0 opacity-70" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">

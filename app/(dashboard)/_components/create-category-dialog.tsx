@@ -125,98 +125,99 @@ export default function CreateCategoryDialog({ type, successCallback }: Props) {
           </DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="space-y-8"
-            >
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nama Kategori</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Masukkan nama kategori"
-                        defaultValue={""}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormDescription>Isikan nama kategori</FormDescription>
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="icon"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Icon</FormLabel>
-                    <FormControl>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className="h-[100px] w-full"
-                          >
-                            {form.watch("icon") ? (
-                              <div className="flex flex-col items-center gap-2">
-                                <span className="text-5xl">{field.value}</span>
-                                <p className="text-xs text-foreground">
-                                  Klik untuk mengganti icon
-                                </p>
-                              </div>
-                            ) : (
-                              <div className="flex flex-col items-center gap-2">
-                                <CircleOff className="shrink-0 size-12 mx-auto" />
-                                <p className="text-xs text-foreground">
-                                  Klik untuk memilih icon untuk Kategori
-                                </p>
-                              </div>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-full p-0">
-                          <Picker
-                            data={data}
-                            theme={theme.resolvedTheme}
-                            onEmojiSelect={(emoji: { native: string }) => {
-                              field.onChange(emoji.native);
-                            }}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </FormControl>
-                    <FormDescription>Pilih icon untuk kategori</FormDescription>
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-          <DialogFooter>
-            <DialogClose className="flex items-center gap-x-2">
-              <Button
-                type="button"
-                variant={"outline"}
-                size={"default"}
-                onClick={() => form.reset()}
-              >
-                Batal
-              </Button>
-              <Button
-                onClick={form.handleSubmit(onSubmit)}
-                disabled={isPending}
-                size={"default"}
-              >
-                {isPending && (
-                  <Loader className="size-4 mr-2 shrink-0 animate-spin" />
-                )}
-                {isPending ? "Membuat" : "Buat"}
-              </Button>
-            </DialogClose>
-          </DialogFooter>
+          Isikan detail untuk membuat kategori baru
         </DialogDescription>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-8"
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nama Kategori</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Masukkan nama kategori"
+                      defaultValue={""}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>Isikan nama kategori</FormDescription>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="icon"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Icon</FormLabel>
+                  <FormControl>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className="h-[100px] w-full"
+                        >
+                          {form.watch("icon") ? (
+                            <div className="flex flex-col items-center gap-2">
+                              <span className="text-5xl">{field.value}</span>
+                              <p className="text-xs text-foreground">
+                                Klik untuk mengganti icon
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="flex flex-col items-center gap-2">
+                              <CircleOff className="shrink-0 size-12 mx-auto" />
+                              <p className="text-xs text-foreground">
+                                Klik untuk memilih icon untuk Kategori
+                              </p>
+                            </div>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-full p-0">
+                        <Picker
+                          data={data}
+                          theme={theme.resolvedTheme}
+                          onEmojiSelect={(emoji: { native: string }) => {
+                            field.onChange(emoji.native);
+                          }}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </FormControl>
+                  <FormDescription>Pilih icon untuk kategori</FormDescription>
+                </FormItem>
+              )}
+            />
+          </form>
+        </Form>
+        <DialogFooter>
+          <DialogClose className="flex items-center gap-x-2">
+            <Button
+              type="button"
+              variant={"outline"}
+              size={"default"}
+              onClick={() => form.reset()}
+            >
+              Batal
+            </Button>
+          </DialogClose>
+          <Button
+            onClick={form.handleSubmit(onSubmit)}
+            disabled={isPending}
+            size={"default"}
+          >
+            {isPending && (
+              <Loader className="size-4 mr-2 shrink-0 animate-spin" />
+            )}
+            {isPending ? "Membuat" : "Buat"}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
